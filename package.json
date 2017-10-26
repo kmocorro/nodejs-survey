@@ -1,0 +1,21 @@
+{
+  "name": "nodejs-survey",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "cookie-session": "^2.0.0-beta.3",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "moment": "^2.19.1",
+    "mysql": "^2.15.0",
+    "socket.io": "^2.0.4"
+  }
+}
