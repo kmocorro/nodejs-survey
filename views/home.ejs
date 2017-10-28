@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<!--by: Kevin Mocorro-->
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Login</title>
+        <link rel="stylesheet" type="text/css" href="./style.css">
+        <link rel="stylesheet" type="text/css" href="./vendor/bootstrap/css/bootstrap.min.css">
+        <script type="text/javascript" src="./vendor/popper/popper.min.js"></script>
+        <script type="text/javascript" src="./vendor/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="./vendor/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="./validation.min.js"></script>
+        <script type="text/javascript" src="./question.js"></script>
+        
+    </head>
+    <body>
+
+        <div class="col-12-md">
+            <img class= "front" src="./fab4lous.png">
+        </div>
+
+        <div class="col-12-md">
+            <div class="greetings" style="text-align:center;margin:30px;">
+                <h1>Hi <%= user_session[0].firstname %>!</h1>
+                <p><%= user_session[0].position %> of Shift <%= user_session[0].shift %>,</p>
+            </div>
+        </div>
+        
+        <div class="col-12-md">
+            <div class="details" style="text-align:center;margin-bottom:30px;">
+                <p>You are invited on <strong><br/><%= user_session[0].schedule %> @ The Tent </strong>
+                </p>
+            </div>
+        </div>
+        
+        <hr>
+
+        <div class="form-question" style="width:auto;">
+            <form action="" method="post" id="survey_form" name="survey_form" class="form-survey">
+                <div class="col-12-md">
+                    <div class="question" style="text-align:center;margin:30px;">
+                        <h4>
+                            Are you going to attend the party?
+                        </h4>
+                    </div>
+                </div>
+                <div class="col-12-md">
+                    <div class="choices" id="choices" style="text-align:center;margin:50px;">
+                        <div class="radYes">
+                            <label class="radioYes"><input type="radio" id="optradio" name="optradio" value="Yes"> Yes </label>
+                        </div>
+                        <div class="radNo">
+                            <label class="radioNo"><input type="radio" id="optradio" name="optradio" value="No"> No </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="yesFirst">
+                    <div class="col-12-md">
+                        <div class="question" style="text-align:center;margin:30px;">
+                            <h4>
+                                What about your Shuttle route?
+                            </h4>
+                        </div>
+                        <div class="col-12-md">
+                            <div class="shuttleSelectionIn" style="margin:0 auto 5px; width:360px; ">
+                                <select class="form-control" id="shuttleIn" name="shuttleIn" type="text">
+                                    <option selected="true" disabled="disabled" value="">Select incoming </option>
+                                    <option value="car">Thanks, I'll drive.</option>
+                                    <% for(let i=0; i<shuttle_obj.length;i++){ %>
+                                        <option value="<%= shuttle_obj[i].shuttle %>">
+                                            <%= shuttle_obj[i].shuttle %>
+                                        </option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="shuttleSelectionOut" style="margin:0 auto 30px; width:360px; ">
+                                    <select class="form-control" id="shuttleOut" name="shuttleOut" type="text">
+                                        <option selected="true" disabled="disabled" value="">Select outgoing </option>
+                                        <option value="car">Thanks, I'll drive.</option>
+                                        <% for(let i=0; i<shuttle_obj.length;i++){ %>
+                                            <option>
+                                                <%= shuttle_obj[i].shuttle %>
+                                            </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12-md">
+                    <div class="submit_survey" style="margin:0 auto 50px; width:360px;">
+                        <button id="btn-survey" class="btn btn-lg btn-warning btn-block"  name="Submit"  type="Submit" style="padding:15px;">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
