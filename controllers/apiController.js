@@ -63,25 +63,22 @@ module.exports = function(app){
 
     app.post('/survey/validate', function(req, res){
         let post_radio = req.body.optradio;
-        let post_shuttleIn = req.body.shuttleIn;
-        let post_shuttleOut = req.body.shuttleOut;
 
-            console.log(post_radio);
-            console.log(post_shuttleIn);
-            console.log(post_shuttleOut);
-
-            if(post_radio == "No" && post){
+            if(post_radio !== "Yes" ){
                 mysqlLocal.getConnection(function(err, connection){
                     connection.query({
-                        sql: 'UPDATE tbl_user_info SET willAttend=?, shuttleRoute=?, shuttleROuteOut=? isDone=? WHERE employee_id=?',
-                        values:[post_radio, 'NA', 'NA', 1, req.session.employee_id]
+                        sql: 'UPDATE tbl_user_info SET willAttend=?, isDone=? WHERE employee_id=?',
+                        values:[post_radio, 1, req.session.employee_id]
                     }, function(err, results, fields){
                         res.send('ok');
                     });
                     connection.release();
                 });
             } else if(post_radio == "Yes") {
-                
+                        
+                let post_shuttleIn = req.body.shuttleIn;
+                let post_shuttleOut = req.body.shuttleOut;
+
                 mysqlLocal.getConnection(function(err, connection){
                     connection.query({
                         sql: 'UPDATE tbl_user_info SET willAttend=?, shuttleRoute=?, shuttleROuteOut=?, isDone=? WHERE employee_id=?',

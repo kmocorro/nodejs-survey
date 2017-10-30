@@ -65,8 +65,8 @@
                         <div class="col-12-md">
                             <div class="shuttleSelectionIn" style="margin:0 auto 5px; width:360px; ">
                                 <select class="form-control" id="shuttleIn" name="shuttleIn" type="text">
-                                    <option selected="true" disabled="disabled" value="">Select incoming </option>
-                                    <option value="car">Thanks, I'll drive.</option>
+                                    <option selected="true" disabled="disabled" value="default">Select incoming </option>
+                                    <option value="Car">Thanks, I'll drive.</option>
                                     <% for(let i=0; i<shuttle_obj.length;i++){ %>
                                         <option value="<%= shuttle_obj[i].shuttle %>">
                                             <%= shuttle_obj[i].shuttle %>
@@ -76,8 +76,8 @@
                             </div>
                             <div class="shuttleSelectionOut" style="margin:0 auto 30px; width:360px; ">
                                     <select class="form-control" id="shuttleOut" name="shuttleOut" type="text">
-                                        <option selected="true" disabled="disabled" value="">Select outgoing </option>
-                                        <option value="car">Thanks, I'll drive.</option>
+                                        <option selected="true" disabled="disabled" value="default">Select outgoing </option>
+                                        <option value="Car">Thanks, I'll drive.</option>
                                         <% for(let i=0; i<shuttle_obj.length;i++){ %>
                                             <option>
                                                 <%= shuttle_obj[i].shuttle %>
@@ -90,10 +90,29 @@
                 </div>
                 <div class="col-12-md">
                     <div class="submit_survey" style="margin:0 auto 50px; width:360px;">
-                        <button id="btn-survey" class="btn btn-lg btn-warning btn-block"  name="Submit"  type="Submit" style="padding:15px;">Submit</button>
+                        <button id="btn-survey" class="btn btn-lg btn-warning btn-block"  name="Submit"  type="button" value="submit" data-toggle="modal" data-target="#confirm-submit" style="padding:15px;">Submit</button>
+                    </div>
+                </div>
+                <div class="modal fade" id="confirm-submit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                Hello <%= user_session[0].firstname %>,
+                            </div>
+            
+                                <div class="modal-body">
+                                    Are you sure you want to submit the pre-registration form?
+                                </div>
+            
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">No, I'll think again</button>
+                                <button type="Submit" id="btn-survey" class="btn btn-primary primary">Yes, Submit!</a>
+                            </div>
                     </div>
                 </div>
             </form>
         </div>
+
+        
     </body>
 </html>

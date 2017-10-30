@@ -5,13 +5,34 @@ $('document').ready(function()
 
      $('.radioYes').on('click', function(){
         $('.yesFirst').show();
-        $("#btn-survey").prop("disabled",false);
+        $("#btn-survey").prop("disabled",true);
     });
 
     $('.radioNo').on('click', function(){
         $('.yesFirst').hide();
         $("#btn-survey").prop("disabled",false);
     });
+
+
+
+    $('#shuttleIn').on('click', function(){
+        let shtIn = $('#shuttleIn option:selected').val();
+        $('#shuttleOut').on('click', function(){
+            let shtOut = $('#shuttleOut option:selected').val();
+            
+            if(shtIn !== 'default' && shtOut !== 'default'){
+                console.log(shtIn);
+                console.log(shtOut);
+
+                $("#btn-survey").prop("disabled",false);
+            }
+
+        });
+            
+    });
+
+    
+
 
 
     /* validation */
@@ -29,9 +50,9 @@ $('document').ready(function()
          messages:
          {
               shuttleIn:{
-                        required: "Select your incoming service"
+                        required: "Please select your incoming route"
                        },
-              shuttleOut: "Select your outgoing service",
+              shuttleOut: "Please select your outgoing route",
          },
          submitHandler: submitForm	
          });  
