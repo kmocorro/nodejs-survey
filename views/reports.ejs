@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Survey Report</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 550px}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      background-color: #FFF;
+      height: 100%;
+    }
+        
+    /* On small screens, set height to 'auto' for the grid */
+    @media screen and (max-width: 767px) {
+      .row.content {height: auto;} 
+    }
+    table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="col-sm-12">
+        <div class="col-sm-3">
+          <div class="boxed">
+            <h4>Participants</h4>
+            <div class="numberOfregistered">
+                <br>
+                <% for(let i=0;i<numberOfregistered_obj.length;i++){ %>
+                    <p><%= numberOfregistered_obj[i].isRegistered %>: <%= numberOfregistered_obj[i].values %></p>
+                <% } %>
+                
+            </div> 
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="boxed">
+            <h4>Attendees</h4>
+            <div class="numberofattendees">
+                <br>
+                <% for(let i=0;i<numberOfattendees_obj.length;i++) { %>
+                    <p><%= numberOfattendees_obj[i].willAttend %>: <%= numberOfattendees_obj[i].values %></p>
+                <% } %>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="boxed">
+            <div class="routes">
+                <table>
+                    <tr>
+                        <th>Shuttle Routes</th>
+                        <th>Incoming</th>
+                        <th>Outgoing</th>
+                    </tr>
+                    
+                    <% for(let i=0;i<numberOfRoutes_obj.length;i++) { %>
+                    <tr>
+                        <td><%= numberOfRoutes_obj[i].shuttleName %></td>
+                        <td><%= numberOfRoutes_obj[i].values_incoming %></td>
+                        <td><%= numberOfRoutes_obj[i].values_outgoing %></td>
+                        
+                    </tr>
+                    <% } %>
+                </table>
+                    
+            </div>
+          </div>
+      </div>
+
+  </div>
+</div>
+
+</body>
+</html>

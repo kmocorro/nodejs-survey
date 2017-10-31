@@ -1,16 +1,19 @@
 $('document').ready(function()
 { 
     $('.yesFirst').hide();
+    $('.noFirst').hide();
+
     $("#btn-survey").prop("disabled",true);
 
      $('.radioYes').on('click', function(){
         $('.yesFirst').show();
+        $('.noFirst').hide();
         $("#btn-survey").prop("disabled",true);
     });
 
     $('.radioNo').on('click', function(){
         $('.yesFirst').hide();
-        $("#btn-survey").prop("disabled",false);
+        $('.noFirst').show();
     });
 
 
@@ -21,14 +24,20 @@ $('document').ready(function()
             let shtOut = $('#shuttleOut option:selected').val();
             
             if(shtIn !== 'default' && shtOut !== 'default'){
-                console.log(shtIn);
-                console.log(shtOut);
-
                 $("#btn-survey").prop("disabled",false);
             }
 
         });
             
+    });
+
+    $('#whySelect').on('click', function(){
+        let whyS = $('#whySelect option:selected').val();
+        
+        if(whyS !== 'default'){
+            $("#btn-survey").prop("disabled",false);
+        }
+
     });
 
     
@@ -83,31 +92,16 @@ $('document').ready(function()
 						$("#btn-survey").html('Saving ...');
                         $("#btn-survey").prop("disabled",true);
 
-						setTimeout(' window.location.href = "/thankyou"; ',2000);
+						setTimeout(' window.location.href = "/thankyou"; ',500);
 					}
 					else{
 									
 						$("#error").fadeIn(1000, function(){						
 							$("#error").html('<div class="alert alert-danger">'+response+' </div>');
 							
-							let counter = 5;
-							let interval = setInterval(function(){
-								counter--;
-								$("#btn-survey").html('Please wait in ' + counter + ' secs');
-
-								if(counter !== 1){
-									$("#btn-survey").html('Please wait in ' + counter + ' secs');
-								} else {
-									$("#btn-survey").html('Please wait in ' + counter + ' sec');
-									clearInterval(interval);
-								}
-							},	1000);
-
-							setTimeout(function(){
-								$("#btn-survey").prop("disabled",false);
-								$("#btn-survey").html('Submit');
-							}, counter +'000');
-							
+                            $("#btn-survey").prop("disabled",false);
+                            
+						    setTimeout(' window.location.href = "/"; ',5000);
 							
                         });
                         

@@ -60,41 +60,66 @@ module.exports = function(app){
         });
     });
 
-
+    //  validate and store survey details
     app.post('/survey/validate', function(req, res){
         let post_radio = req.body.optradio;
+        let post_whyNot = req.body.whySelect;
+        let user_id_from_session = req.session.employee_id;
 
-            if(post_radio !== "Yes" ){
-                mysqlLocal.getConnection(function(err, connection){
-                    connection.query({
-                        sql: 'UPDATE tbl_user_info SET willAttend=?, isDone=? WHERE employee_id=?',
-                        values:[post_radio, 1, req.session.employee_id]
-                    }, function(err, results, fields){
-                        res.send('ok');
-                    });
-                    connection.release();
-                });
-            } else if(post_radio == "Yes") {
-                        
-                let post_shuttleIn = req.body.shuttleIn;
-                let post_shuttleOut = req.body.shuttleOut;
-
-                mysqlLocal.getConnection(function(err, connection){
-                    connection.query({
-                        sql: 'UPDATE tbl_user_info SET willAttend=?, shuttleRoute=?, shuttleROuteOut=?, isDone=? WHERE employee_id=?',
-                        values:[post_radio, post_shuttleIn, post_shuttleOut, 1, req.session.employee_id]
-                    }, function(err, results, fields){
-                        res.send('ok');
-                    });
-                    connection.release();
-                });
+        // check user if tries to press the back button and re-survey again
+        mysqlLocal.getConnection(function(err, connection){
+            connection.query({
+                sql: 'SELECT isDone FROM tbl_user_info WHERE employee_id = ?',
+                values: [user_id_from_session]
+            },  function(err, results, fields){
+                if(results.length < 0){
+                    res.send('Sorry, you are not authorized to do that again. <br/><i>Opportunity never knocks twice</i></center>');
+                } else {
+                    let ggVal = results[0].isDone;
+                    if(ggVal !== 1){
+                        // if the user didn't try to go back
+                        if(post_radio !== "Yes" ){
+                            mysqlLocal.getConnection(function(err, connection){
+                                connection.query({
+                                    sql: 'UPDATE tbl_user_info SET willAttend=?, isDone=?, whyNot=?, isRegistered=? WHERE employee_id=?',
+                                    values:[post_radio, 1, post_whyNot, 'Registered', user_id_from_session]
+                                }, function(err, results, fields){
+                                    res.send('ok');
+                                });
+                                connection.release();
+                            });
+                        } else if(post_radio == "Yes") {
+                                    
+                            let post_shuttleIn = req.body.shuttleIn;
+                            let post_shuttleOut = req.body.shuttleOut;
             
-            }
+                            mysqlLocal.getConnection(function(err, connection){
+                                connection.query({
+                                    sql: 'UPDATE tbl_user_info SET willAttend=?, shuttleRoute=?, shuttleROuteOut=?, isDone=?, whyNot=?, isRegistered=? WHERE employee_id=?',
+                                    values:[post_radio, post_shuttleIn, post_shuttleOut, 1, 'I will attend', 'Registered',user_id_from_session]
+                                }, function(err, results, fields){
+                                    res.send('ok');
+                                });
+                                connection.release();
+                            });
+                        
+                        }        
+    
+                    } else {
+                        res.send('<center>' + user_id_from_session + ' was already participated. <br/><i>Opportunity never knocks twice</i></center>');
+                    }
 
+                }
+                
+            }); 
+            connection.release();
+        });
+            
     });
 
     // to check how many employees pre-registered.
     app.get('/', function(req, res){
+
         mysqlLocal.getConnection(function(err, connection){
             connection.query({
                 sql: 'SELECT SUM(isDone) AS numOfreg FROM tbl_user_info'
@@ -145,7 +170,88 @@ module.exports = function(app){
 
     // thank you page
     app.get('/thankyou', checkAuth, function(req, res){
+        delete req.session.firstname;
         res.render('thankyou');
+    });
+
+    //  reports
+    app.get('/reports', function(req, res){
+
+        function numberOfregistered(){
+            return new Promise(function(resolve, reject){
+                mysqlLocal.getConnection(function(err, connection){
+                    if(err){reject(err);}
+                    connection.query({
+                        sql: 'SELECT isRegistered, COUNT(isRegistered) AS num FROM tbl_user_info GROUP BY isRegistered'
+                    },  function(err, results, fields){
+                        if(err){reject(err);}
+                        let numberOfregistered_obj=[];
+                            for(let i=0;i<results.length;i++){
+                                numberOfregistered_obj.push({
+                                    isRegistered: results[i].isRegistered,
+                                    values: results[i].num
+                                });
+                            }
+                        resolve(numberOfregistered_obj);
+                    });
+                connection.release();
+                });
+            });
+        }
+
+        function numberOfattendees(){
+            return new Promise(function(resolve, reject){
+                mysqlLocal.getConnection(function(err, connection){
+                    if(err){reject(err);}
+                    connection.query({
+                        sql: 'SELECT willAttend, COUNT(willAttend) AS num FROM tbl_user_info GROUP BY willAttend ORDER BY COUNT(willAttend) ASC'
+                    },  function(err, results, fields){
+                        if(err){reject(err);}
+                        let numberOfattendees_obj=[];
+                            for(let i=0;i<results.length;i++){
+                                numberOfattendees_obj.push({
+                                    willAttend: results[i].willAttend,
+                                    values: results[i].num
+                                });
+                            }
+                        resolve(numberOfattendees_obj);
+                    });
+                connection.release();
+                });
+            });
+        }
+
+        function numberOfRoutes(){
+            return new Promise(function(resolve, reject){
+                mysqlLocal.getConnection(function(err, connection){
+                    if(err){reject(err);}
+                    connection.query({
+                        sql: 'SELECT A.shuttleRoute as shuttleName, A.incoming AS incoming, B.outgoing AS outgoing FROM (SELECT A.shuttleRoute, COUNT(B.shuttleRoute) AS incoming FROM tbl_shuttle_info A LEFT JOIN tbl_user_info B ON A.shuttleRoute = B.shuttleRoute GROUP BY A.shuttleRoute ORDER BY incoming DESC) A LEFT JOIN (SELECT A.shuttleRoute, COUNT(B.shuttleROuteOut) AS outgoing FROM tbl_shuttle_info A LEFT JOIN tbl_user_info B on A.shuttleRoute = B.shuttleROuteOut GROUP BY A.shuttleRoute ORDER BY outgoing DESC) B ON A.shuttleRoute = B.shuttleRoute GROUP BY A.shuttleRoute, B.shuttleRoute ORDER BY A.incoming DESC, B.outgoing DESC'
+                    },  function(err, results, fields){
+                        if(err){reject(err);}
+                        let numberOfRoutes_obj=[];
+                            for(let i=0;i<results.length;i++){
+                                numberOfRoutes_obj.push({
+                                    shuttleName: results[i].shuttleName,
+                                    values_incoming: results[i].incoming,
+                                    values_outgoing: results[i].outgoing
+                                });
+                            }
+                        resolve(numberOfRoutes_obj);
+                    });
+                connection.release();
+                });
+            });
+        }
+
+        numberOfregistered().then(function(numberOfregistered_obj){
+            return numberOfattendees().then(function(numberOfattendees_obj){
+                return numberOfRoutes().then(function(numberOfRoutes_obj){
+                    res.render('reports', {numberOfregistered_obj, numberOfattendees_obj, numberOfRoutes_obj});
+                });
+            });
+        });
+        
     });
 
     // logout
@@ -156,8 +262,8 @@ module.exports = function(app){
 
 
     function checkAuth(req, res, next) {
-        if (!req.session.employee_id) {
-          res.render('authfail');
+        if (!req.session.employee_id || !req.session.firstname) {
+          res.redirect('/');
         } else {
           next();
         }

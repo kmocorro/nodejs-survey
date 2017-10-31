@@ -2,6 +2,9 @@
 <!--by: Kevin Mocorro-->
 <html>
     <head>
+        <meta Http-Equiv="Cache-Control" Content="no-cache">
+        <meta Http-Equiv="Pragma" Content="no-cache">
+        <meta Http-Equiv="Expires" Content="0"> 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Login</title>
@@ -16,25 +19,22 @@
     </head>
     <body>
 
-        <div class="col-12-md">
-            <img class= "front" src="./fab4lous.png">
-        </div>
-
-        <div class="col-12-md">
-            <div class="greetings" style="text-align:center;margin:30px;">
-                <h1>Hi <%= user_session[0].firstname %>!</h1>
-                <p><%= user_session[0].position %> of Shift <%= user_session[0].shift %>,</p>
+        <div class="col-12-md" style="background-image:url('./cover.png'); background-repeat:no-repeat; background-size: 100% 100%; width:100%;padding: 50px 0 10px;color:#fff">
+            <div class="col-12-md">
+                <div class="greetings" style="text-align:center;">
+                    <h1>Hi <%= user_session[0].firstname %>!</h1>
+                    <p><%= user_session[0].position %> of Shift <%= user_session[0].shift %>,</p>
+                </div>
+            </div>
+            
+            <div class="col-12-md">
+                <div class="details" style="text-align:center;margin-bottom:30px;">
+                    <p>You are invited on <strong><br/><%= user_session[0].schedule %></strong> <br/> @ The Filinvest Tent <br/>
+                        Spectrum Midway, Alabang, Muntinlupa, 1780 Metro Manila
+                    </p>
+                </div>
             </div>
         </div>
-        
-        <div class="col-12-md">
-            <div class="details" style="text-align:center;margin-bottom:30px;">
-                <p>You are invited on <strong><br/><%= user_session[0].schedule %> @ The Tent </strong>
-                </p>
-            </div>
-        </div>
-        
-        <hr>
 
         <div class="form-question" style="width:auto;">
             <form action="" method="post" id="survey_form" name="survey_form" class="form-survey">
@@ -66,7 +66,6 @@
                             <div class="shuttleSelectionIn" style="margin:0 auto 5px; width:360px; ">
                                 <select class="form-control" id="shuttleIn" name="shuttleIn" type="text">
                                     <option selected="true" disabled="disabled" value="default">Select incoming </option>
-                                    <option value="Car">Thanks, I'll drive.</option>
                                     <% for(let i=0; i<shuttle_obj.length;i++){ %>
                                         <option value="<%= shuttle_obj[i].shuttle %>">
                                             <%= shuttle_obj[i].shuttle %>
@@ -77,9 +76,8 @@
                             <div class="shuttleSelectionOut" style="margin:0 auto 30px; width:360px; ">
                                     <select class="form-control" id="shuttleOut" name="shuttleOut" type="text">
                                         <option selected="true" disabled="disabled" value="default">Select outgoing </option>
-                                        <option value="Car">Thanks, I'll drive.</option>
                                         <% for(let i=0; i<shuttle_obj.length;i++){ %>
-                                            <option>
+                                            <option value="<%= shuttle_obj[i].shuttle %>">
                                                 <%= shuttle_obj[i].shuttle %>
                                             </option>
                                         <% } %>
@@ -88,10 +86,33 @@
                         </div>
                     </div>
                 </div>
+                <div class="noFirst">
+                    <div class="col-12-mid">
+                        <div class="whyNot" style="text-align:center;margin:30px;">
+                            <h4>
+                                Please select why you're not going
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="col-12-mid">
+                        <div class="whyNotSelection" style="margin:0 auto 5px; width:360px;padding-bottom: 20px;">
+                            <select class="form-control" id="whySelect" name="whySelect" type="text">
+                                <option selected="true" disabled="disabled" value="default">I'm not going because</option>
+                                <option value="theme">I don't like/vote for the theme</option>
+                                <option value="dress">I don't have dress/outfit for the theme</option>
+                                <option value="shift">I want to change my schedule</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-12-md">
                     <div class="submit_survey" style="margin:0 auto 50px; width:360px;">
-                        <button id="btn-survey" class="btn btn-lg btn-warning btn-block"  name="Submit"  type="button" value="submit" data-toggle="modal" data-target="#confirm-submit" style="padding:15px;">Submit</button>
+                        <button id="btn-survey" class="btn btn-lg btn-danger btn-block"  name="Submit"  type="button" value="submit" data-toggle="modal" data-target="#confirm-submit" style="padding:15px;">Submit</button>
+                        <div class="logout" style="text-align:center;font-size:12px;margin:10px;">
+                                <a href="/logout">I'll do it later</a>
+                        </div>
                     </div>
+                    
                 </div>
                 <div class="modal fade" id="confirm-submit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -102,6 +123,12 @@
             
                                 <div class="modal-body">
                                     Are you sure you want to submit the pre-registration form?
+                                    <div class="final" style="font-size:12px;">
+                                        <i>All information you've provided will be used in the event.</i>
+                                    </div>
+                                    <div id="error">
+                                            <!-- error will be shown here -->
+                                    </div>
                                 </div>
             
                             <div class="modal-footer">
