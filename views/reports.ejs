@@ -34,7 +34,7 @@
     }
 
     tr:nth-child(even) {
-        background-color: #dddddd;
+        background-color: #F5F5F5;
     }
   </style>
 </head>
@@ -65,9 +65,36 @@
             </div>
           </div>
         </div>
+        <div class="col-sm-3">
+                <div class="boxed">
+                  <h4>Per Shift</h4>
+                  <div class="perShift">
+                      <br>
+                      <table>
+                          <tr>
+                              <th>Shift</th>
+                              <th>Date</th>
+                              <th>Number of Attendees</th>
+
+                          </tr>
+                          
+                            <% for(let i=0;i<perShift_obj.length;i++){ %>
+                            <tr>
+                                <td><%= perShift_obj[i].shift %></td>
+                                <td><%= perShift_obj[i].schedule %></td>
+                                <td><%= perShift_obj[i].value %></td>
+                            </tr>
+                            <% } %>
+                      </table>
+                      
+                  </div> 
+                </div>
+              </div>
         <div class="col-sm-6">
           <div class="boxed">
+            <h4>Shuttle</h4>
             <div class="routes">
+                <br>
                 <table>
                     <tr>
                         <th>Shuttle Routes</th>

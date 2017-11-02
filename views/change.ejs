@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Change</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <link rel="stylesheet" type="text/css" href="./vendor/bootstrap/css/bootstrap.min.css">
+    <script type="text/javascript" src="./vendor/popper/popper.min.js"></script>
+    <script type="text/javascript" src="./vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="./validation.min.js"></script>
+    <script type="text/javascript" src="./vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./change.js"></script>
+</head>
+    <body>
+        <div class = "container">
+            <div class="wrapper">
+                <form action="" method="post" id="change_form" name="change_form" class="form-signin">       
+                    <hr class="colorgraph"><br>
+                    <div id="error">
+                            <!-- error will be shown here -->
+                    </div>
+                    
+                    
+                    <div class="emp_div" style="padding-bottom:5px;">
+                        <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control" id="employee_id" name="employee_id" placeholder="Employee number" required="" autofocus="" />
+                    </div>
+                    
+                    <div class="lastname_div" style="padding-bottom:40px;">
+                        <input type="text" style="text-transform: capitalize;" class="form-control" id="lastname" name="lastname" placeholder="Lastname" required=""/> 
+                    </div>    		  
+                    
+                    <div class="change_div">
+                        <button id="btn-change" class="btn btn-lg btn-warning btn-block"  name="Submit"  type="Submit" style="padding:15px;">Change</button>
+                    </div>
+                    <br />
+                    
+                    <br />
+                </form>			
+            </div>
+        </div>
+    </body>
+</html>

@@ -50,7 +50,7 @@ module.exports = function(app){
                         res.send('ok');
 
                     } else {
-                        res.send(post_employee_id + ' was already participated. <br /><i>If you believed that you have not yet participated, <br />Please contact <a href="mailto:kevin.mocorro@sunpowercorp.com?Subject=Need%20Help,%20(Please%20use%20outlook%20when%20sending%20an%20email)" target="_blank">Kevin Mocorro </a>:)</i>');
+                        res.send(post_employee_id + ' was already participated. <br /><i>If you believed that you have not yet participated, <br />Please contact your immediate supervisor</i>');
                     }
                 } else {
                     res.send('Sorry, ID number or Lastname is incorrect <br/>(ex: 12345) <br/>(ex: Mocorro / Mocorro Jr / Mocorro III )');
@@ -117,6 +117,50 @@ module.exports = function(app){
             
     });
 
+    //  user changed his/her mind
+    app.post('/change/validate', function(req, res){
+        let post_employee_id = req.body.employee_id;
+        let post_lastname = req.body.lastname;
+        // check first if the employee is registered
+        mysqlLocal.getConnection(function(err, connection){
+            connection.query({
+                sql: 'SELECT * FROM tbl_user_info WHERE employee_id=? AND lastname=?',
+                values: [post_employee_id, post_lastname]
+            },  function(err, results, fields){
+                let checkIfregistered_obj=[];
+
+                    if(typeof results !== "undefined" && results !== null && results.length > 0){
+                        
+                        if(results[0].isRegistered == "Registered"){
+
+                            mysqlLocal.getConnection(function(err, connection){
+                                connection.query({
+                                    sql: 'UPDATE tbl_user_info SET willAttend="Undecided", shuttleRoute=null, shuttleROuteOut=null, isDone=0, whyNot="Undecided", isRegistered="Unregistered" WHERE employee_id = ?',
+                                    values: [post_employee_id]
+                                },  function(err, results, fields){
+                
+                                });
+                            connection.release();
+                            });
+
+                            res.send('ok');
+
+                        } else {
+                            res.send(post_employee_id + ' is not yet registered.');
+                        }
+
+                    } else {
+
+                        res.send('Employee ID or Lastname is invalid.');
+
+                    }
+            });
+        connection.release();
+        });
+
+            
+    });
+
     // to check how many employees pre-registered.
     app.get('/', function(req, res){
 
@@ -135,6 +179,11 @@ module.exports = function(app){
             });
             connection.release();
         });
+    });
+
+    // change page
+    app.get('/change', function(req, res){
+        res.render('change');
     });
     
     // home page
@@ -244,10 +293,45 @@ module.exports = function(app){
             });
         }
 
+        function perShift(){
+            return new Promise(function(resolve, reject){
+                mysqlLocal.getConnection(function(err, connection){
+                    connection.query({
+                        sql:'SELECT shift, schedule, COUNT(shift) AS value FROM tbl_user_info WHERE willAttend = "Yes" GROUP BY shift, schedule'
+                    },  function(err, results, fields){
+                        if(err){reject(err);}
+                        let perShift_obj=[];
+                            if(typeof results !== 'undefined' && results !== null && results.length > 0){
+                                for(let i=0;i<results.length;i++){
+                                    perShift_obj.push({
+                                        shift: results[i].shift,
+                                        schedule: moment(results[i].schedule).format('MMMM Do YYYY, h A'),
+                                        value: results[i].value
+                                    });
+                                }
+                                resolve(perShift_obj);
+                            } else {
+                                perShift_obj.push({
+                                    shift: '--',
+                                    schedule: '--',
+                                    value: '--'
+                                });
+                                resolve(perShift_obj);
+                            }
+                    });
+                    connection.release();
+                });
+            });
+        }
+
         numberOfregistered().then(function(numberOfregistered_obj){
             return numberOfattendees().then(function(numberOfattendees_obj){
                 return numberOfRoutes().then(function(numberOfRoutes_obj){
-                    res.render('reports', {numberOfregistered_obj, numberOfattendees_obj, numberOfRoutes_obj});
+                    return perShift().then(function(perShift_obj){
+
+                        res.render('reports', {numberOfregistered_obj, numberOfattendees_obj, numberOfRoutes_obj, perShift_obj});        
+
+                    });
                 });
             });
         });
