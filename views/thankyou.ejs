@@ -3,11 +3,25 @@
 <meta Http-Equiv="Cache-Control" Content="no-cache">
 <meta Http-Equiv="Pragma" Content="no-cache">
 <meta Http-Equiv="Expires" Content="0"> 
-    <head></head>
-    <body>
-        <p>
+
+<script type="text/javascript" src="./vendor/jquery/jquery.min.js"></script>
+    <head>
+        <title>
             Thank you!
-            <a href="/">Login again</a>
-        </p>
+        </title>
+    </head>
+    <body style="background-color: #fdfff9">
+        <div class="thankyoudiv" style="position: relative; text-align: center;">
+            <img src="./thanksx.jpg" style=" max-width: 100%;">
+            <div class="namecentered" style="font-size: 50px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);color: rgb(151, 163, 158); font-family: 'Open Sans Light', Times, serif; font-weight:400;"><%= post_firstname[0].firstname%>!</div>
+
+        </div>
+        
     </body>
-</html>
+    <script>
+        $('document').ready(function(){
+            setTimeout(' window.location.href = "/"; ',5000);
+        });
+    </script>
+
+</html> 

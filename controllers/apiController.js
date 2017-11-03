@@ -3,6 +3,8 @@ var mysqlLocal = require('../dbconfig/configLocal').poolLocal;
 var Promise = require('bluebird');
 var moment = require('moment');
 
+var nodeExcel = require('excel-export');
+
 
 module.exports = function(app){
 
@@ -219,8 +221,125 @@ module.exports = function(app){
 
     // thank you page
     app.get('/thankyou', checkAuth, function(req, res){
-        delete req.session.firstname;
-        res.render('thankyou');
+        delete req.session.employee_id;
+        let post_firstname = [];
+        post_firstname.push({
+            firstname: req.session.firstname
+        });
+        res.render('thankyou', {post_firstname});
+    });
+
+    //  data to excel
+    app.get('/excel', function(req, res){
+
+        function colName(){
+            return new Promise(function(resolve, reject){
+                let colName_obj=[];
+                    // column types and caption
+                    colName_obj.push({
+                            // employee_id
+                            caption: 'employee_id',
+                            type: 'number'
+                        },
+                        {
+                            // lastname
+                            caption:'lastname',
+                            type:'string'
+                        }, 
+                        {
+                            // firstname
+                            caption: 'firstname',
+                            type: 'string'
+                        }, 
+                        {
+                            // position
+                            caption: 'position',
+                            type: 'string'
+                        },
+                        {
+                            // department
+                            caption: 'department',
+                            type: 'string'
+                        },
+                        {
+                            // shift
+                            caption: 'shift',
+                            type: 'string'
+                        }, 
+                        {   
+                            // schedule
+                            caption: 'schedule',
+                            type: 'date'
+
+                        }, 
+                        {
+                            // willAttend
+                            caption: 'willAttend',
+                            type: 'string'
+                        }, 
+                        {
+                            // shuttleRoute
+                            caption: 'incoming',
+                            type: 'string'
+                        }, 
+                        {
+                            //  shuttleROuteOut
+                            caption: 'outgoing',
+                            type: 'string'
+                        }, 
+                        {
+                            // whyNot
+                            caption: 'reason',
+                            type: 'string'
+                        }, 
+                        {
+                            // isRegistered?
+                            caption: 'isRegistered?',
+                            type: 'string'
+                    });
+                resolve(colName_obj);
+            });
+        }
+
+        function rowsVal(){
+            return new Promise(function(resolve, reject){
+                mysqlLocal.getConnection(function(err, connection){
+                    if(err){reject(err);}
+                    connection.query({
+                        sql: 'SELECT employee_id, lastname, firstname, position, department, shift, schedule, willAttend, shuttleRoute, shuttleROuteOut, whyNot, isRegistered FROM tbl_user_info'
+                    },  function(err, results, fields){
+                        if(err){reject(err);}
+                        let selectAll_obj=[];
+                            for(let i=0;i<results.length;i++){
+                                selectAll_obj.push(
+                                    [results[i].employee_id, results[i].lastname, results[i].firstname, results[i].position, results[i].department, results[i].shift, moment(results[i].schedule).format('MMMM Do YYYY, h A'), results[i].willAttend, results[i].shuttleRoute, results[i].shuttleROuteOut, results[i].whyNot, results[i].isRegistered]
+                                );
+                            }
+                        resolve(selectAll_obj);
+                            
+                    });
+                    connection.release();
+                });
+            });
+        }
+
+        colName().then(function(colName_obj){
+            return rowsVal().then(function(selectAll_obj){
+                // time to export
+                let conf={};
+                let newDate = new Date();
+                let dateGG = moment(newDate).format();
+                conf.name = "survey_results";
+                //  .with rows and cols
+                conf.cols = colName_obj;
+                conf.rows = selectAll_obj;
+                let result = nodeExcel.execute(conf);
+                res.setHeader('Content-Type', 'application/vnd.ms-excel');
+                res.setHeader('Content-Disposition', 'attachment; filename=' + dateGG + "_party_survey.xlsx");
+                res.end(result, 'binary');
+            });
+        });
+        
     });
 
     //  reports
@@ -344,7 +463,7 @@ module.exports = function(app){
         res.redirect('/');
     });
 
-
+    //  authenticate
     function checkAuth(req, res, next) {
         if (!req.session.employee_id || !req.session.firstname) {
           res.redirect('/');
