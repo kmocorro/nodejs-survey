@@ -74,9 +74,10 @@ module.exports = function(app){
                 sql: 'SELECT isDone FROM tbl_user_info WHERE employee_id = ?',
                 values: [user_id_from_session]
             },  function(err, results, fields){
-                if(results.length < 0){
+                if(typeof results == "undefined" && results == null && results.length < 0){
                     res.send('Sorry, you are not authorized to do that again. <br/><i>Opportunity never knocks twice</i></center>');
                 } else {
+                    
                     let ggVal = results[0].isDone;
                     if(ggVal !== 1){
                         // if the user didn't try to go back
@@ -221,7 +222,6 @@ module.exports = function(app){
 
     // thank you page
     app.get('/thankyou', checkAuth, function(req, res){
-        delete req.session.employee_id;
         let post_firstname = [];
         post_firstname.push({
             firstname: req.session.firstname
